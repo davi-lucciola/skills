@@ -28,6 +28,7 @@ function destinationNames() {
 }
 export function parseArgs(argv) {
     const flags = {
+        command: "install",
         target: null,
         global: false,
         yes: false,
@@ -58,6 +59,12 @@ export function parseArgs(argv) {
                 throw new Error(`Informe o destino depois de --target: ${destinationNames()}.`);
             }
         }
+        else if (arg === "update") {
+            if (flags.command === "update") {
+                throw new Error("Argumento desconhecido: update");
+            }
+            flags.command = "update";
+        }
         else {
             throw new Error(`Argumento desconhecido: ${arg}`);
         }
@@ -74,9 +81,10 @@ export function parseArgs(argv) {
     return flags;
 }
 export function helpText() {
-    return `Uso: skills [opções]
+    return `Uso: skills [update] [opções]
 
 Instala as skills deste pacote no repositório atual ou na home.
+update copia de novo e substitui as skills que já existem, sem perguntar.
 
 Opções:
   --target, -t <destino>       ${destinationNames()}.
@@ -139,7 +147,7 @@ async function chooseScope(flags) {
     return selected;
 }
 async function confirmOverwrite(skillName, flags) {
-    if (flags.yes)
+    if (flags.command === "update" || flags.yes)
         return true;
     if (!process.stdin.isTTY) {
         throw new Error(`${skillName} já existe no destino. Use --yes para substituir.`);
@@ -157,7 +165,7 @@ export async function main(argv) {
         console.log(helpText().trimEnd());
         return;
     }
-    p.intro("Instalar skills");
+    p.intro(flags.command === "update" ? "Atualizar skills" : "Instalar skills");
     const targetId = await chooseTarget(flags);
     const scope = await chooseScope(flags);
     const destination = resolveDestination(targetId, {

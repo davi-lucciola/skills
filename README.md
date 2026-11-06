@@ -30,6 +30,13 @@ npx --yes github:davi-lucciola/skills --target opencode --global --yes
 
 `--yes` só confirma a substituição de uma skill que já existe. Sem `--global`, o destino é o repositório em que o comando rodou.
 
+Para atualizar, rode o mesmo comando com `update`. Ele copia de novo e substitui o que já está no destino, sem perguntar. O destino e o escopo continuam valendo. Uma skill que saiu deste pacote permanece no destino.
+
+```bash
+npx --yes github:davi-lucciola/skills update --target claude-code
+npx --yes github:davi-lucciola/skills update --target codex --global
+```
+
 O instalador copia os arquivos. Não cria symlink: o cache do `npx` some, e um link quebraria no repositório de destino.
 
 `npx skills@latest add davi-lucciola/skills` é outro programa, o CLI da Vercel. Ele não pergunta entre `.cursor/skills` e `.agents/skills`.

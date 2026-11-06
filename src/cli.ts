@@ -8,6 +8,7 @@ import { installSkill, pathExists } from "./install.js";
 import { resolveDestination, targets, visibleTargets } from "./targets.js";
 
 export type Flags = {
+  command: "install" | "update";
   target: string | null;
   global: boolean;
   yes: boolean;
@@ -36,6 +37,7 @@ function destinationNames(): string {
 
 export function parseArgs(argv: string[]): Flags {
   const flags: Flags = {
+    command: "install",
     target: null,
     global: false,
     yes: false,
@@ -66,6 +68,11 @@ export function parseArgs(argv: string[]): Flags {
           `Informe o destino depois de --target: ${destinationNames()}.`,
         );
       }
+    } else if (arg === "update") {
+      if (flags.command === "update") {
+        throw new Error("Argumento desconhecido: update");
+      }
+      flags.command = "update";
     } else {
       throw new Error(`Argumento desconhecido: ${arg}`);
     }
@@ -87,9 +94,10 @@ export function parseArgs(argv: string[]): Flags {
 }
 
 export function helpText(): string {
-  return `Uso: skills [opções]
+  return `Uso: skills [update] [opções]
 
 Instala as skills deste pacote no repositório atual ou na home.
+update copia de novo e substitui as skills que já existem, sem perguntar.
 
 Opções:
   --target, -t <destino>       ${destinationNames()}.
@@ -153,7 +161,7 @@ async function chooseScope(flags: Flags): Promise<"project" | "global"> {
 }
 
 async function confirmOverwrite(skillName: string, flags: Flags): Promise<boolean> {
-  if (flags.yes) return true;
+  if (flags.command === "update" || flags.yes) return true;
   if (!process.stdin.isTTY) {
     throw new Error(
       `${skillName} já existe no destino. Use --yes para substituir.`,
@@ -174,7 +182,7 @@ export async function main(argv: string[]): Promise<void> {
     return;
   }
 
-  p.intro("Instalar skills");
+  p.intro(flags.command === "update" ? "Atualizar skills" : "Instalar skills");
 
   const targetId = await chooseTarget(flags);
   const scope = await chooseScope(flags);
