@@ -65,9 +65,10 @@ test("--help sai zero", () => {
     assert.match(result.stdout, /opencode/);
     assert.match(result.stdout, /update/);
 });
-test("update substitui a skill sem --yes", async () => {
+test("update pergunta antes de substituir e avisa que a skill será trocada", async () => {
     const skillDir = path.join(packageRoot, "skills", "fixture-update");
     const cwd = await fs.mkdtemp(path.join(os.tmpdir(), "skills-update-"));
+    const installedFile = path.join(cwd, ".cursor", "skills", "fixture-update", "SKILL.md");
     await fs.rm(skillDir, { recursive: true, force: true });
     await fs.mkdir(skillDir, { recursive: true });
     try {
@@ -77,14 +78,20 @@ test("update substitui a skill sem --yes", async () => {
         assert.equal(installed.status, 0, installedOutput);
         assert.match(installedOutput, /Atualizar skills/);
         assert.match(installedOutput, /Instaladas: fixture-update/);
-        assert.equal(await fs.readFile(path.join(cwd, ".cursor", "skills", "fixture-update", "SKILL.md"), "utf8"), "primeira");
+        assert.equal(await fs.readFile(installedFile, "utf8"), "primeira");
         await fs.writeFile(path.join(skillDir, "SKILL.md"), "segunda");
-        const updated = runCli(["update", "--target", "cursor"], cwd);
+        const blocked = runCli(["update", "--target", "cursor"], cwd);
+        const blockedOutput = `${blocked.stdout}${blocked.stderr}`;
+        assert.notEqual(blocked.status, 0, blockedOutput);
+        assert.match(blockedOutput, /fixture-update já existe e será substituída pela nova/);
+        assert.match(blockedOutput, /Use --yes para substituir/);
+        assert.equal(await fs.readFile(installedFile, "utf8"), "primeira");
+        const updated = runCli(["update", "--target", "cursor", "--yes"], cwd);
         const updatedOutput = `${updated.stdout}${updated.stderr}`;
         assert.equal(updated.status, 0, updatedOutput);
+        assert.match(updatedOutput, /já existe e será substituída pela nova/);
         assert.match(updatedOutput, /Substituídas: fixture-update/);
-        assert.doesNotMatch(updatedOutput, /já existe/);
-        assert.equal(await fs.readFile(path.join(cwd, ".cursor", "skills", "fixture-update", "SKILL.md"), "utf8"), "segunda");
+        assert.equal(await fs.readFile(installedFile, "utf8"), "segunda");
     }
     finally {
         await fs.rm(skillDir, { recursive: true, force: true });

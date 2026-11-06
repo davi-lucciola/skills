@@ -30,7 +30,7 @@ npx --yes github:davi-lucciola/skills --target opencode --global --yes
 
 `--yes` só confirma a substituição de uma skill que já existe. Sem `--global`, o destino é o repositório em que o comando rodou.
 
-Para atualizar, rode o mesmo comando com `update`. Ele copia de novo e substitui o que já está no destino, sem perguntar. O destino e o escopo continuam valendo. Uma skill que saiu deste pacote permanece no destino.
+Para atualizar, rode o mesmo comando com `update`. Se a skill já existe, o comando pergunta e avisa que ela será substituída pela nova. `--yes` confirma essa substituição. O destino e o escopo continuam valendo. Uma skill que saiu deste pacote permanece no destino.
 
 ```bash
 npx --yes github:davi-lucciola/skills update --target claude-code

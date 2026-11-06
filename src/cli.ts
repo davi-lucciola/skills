@@ -97,7 +97,8 @@ export function helpText(): string {
   return `Uso: skills [update] [opções]
 
 Instala as skills deste pacote no repositório atual ou na home.
-update copia de novo e substitui as skills que já existem, sem perguntar.
+Se a skill já existe, o comando pergunta e avisa que ela será
+substituída pela nova. update faz o mesmo.
 
 Opções:
   --target, -t <destino>       ${destinationNames()}.
@@ -160,16 +161,27 @@ async function chooseScope(flags: Flags): Promise<"project" | "global"> {
   return selected;
 }
 
-async function confirmOverwrite(skillName: string, flags: Flags): Promise<boolean> {
-  if (flags.command === "update" || flags.yes) return true;
+function replacementWarning(names: string[]): string {
+  if (names.length === 1) {
+    return `${names[0]} já existe e será substituída pela nova.`;
+  }
+  return `${names.join(", ")} já existem e serão substituídas pelas novas.`;
+}
+
+async function confirmReplacement(names: string[], flags: Flags): Promise<boolean> {
+  if (names.length === 0) return true;
+
+  const warning = replacementWarning(names);
+  if (flags.yes) {
+    p.log.warn(warning);
+    return true;
+  }
   if (!process.stdin.isTTY) {
-    throw new Error(
-      `${skillName} já existe no destino. Use --yes para substituir.`,
-    );
+    throw new Error(`${warning} Use --yes para substituir.`);
   }
 
   const confirmed = await p.confirm({
-    message: `${skillName} já existe. Substituir?`,
+    message: `${warning} Substituir?`,
   });
   if (p.isCancel(confirmed)) cancel();
   return confirmed;
@@ -199,19 +211,23 @@ export async function main(argv: string[]): Promise<void> {
     return;
   }
 
+  const existing: string[] = [];
+  for (const skill of skills) {
+    if (await pathExists(path.join(destination, skill.name))) {
+      existing.push(skill.name);
+    }
+  }
+  const replaceExisting = await confirmReplacement(existing, flags);
+
   const installed: string[] = [];
   const replaced: string[] = [];
   const skipped: string[] = [];
 
   for (const skill of skills) {
-    const dest = path.join(destination, skill.name);
-    let overwrite = false;
-    if (await pathExists(dest)) {
-      overwrite = await confirmOverwrite(skill.name, flags);
-      if (!overwrite) {
-        skipped.push(skill.name);
-        continue;
-      }
+    const overwrite = existing.includes(skill.name);
+    if (overwrite && !replaceExisting) {
+      skipped.push(skill.name);
+      continue;
     }
 
     const result = await installSkill({
