@@ -34,7 +34,10 @@ test("parseArgs lê destino, escopo e confirmação", () => {
         help: false,
     });
     assert.equal(parseArgs(["--target=agents"]).target, "agents");
-    assert.throws(() => parseArgs(["--target", "opencode"]), /ainda não disponível/);
+    assert.equal(parseArgs(["--target", "claude-code"]).target, "claude-code");
+    assert.equal(parseArgs(["--target", "codex"]).target, "codex");
+    assert.equal(parseArgs(["--target=opencode"]).target, "opencode");
+    assert.throws(() => parseArgs(["--target", "devin"]), /ainda não disponível/);
     assert.throws(() => parseArgs(["--nope"]), /desconhecido/);
 });
 test("sem skills, termina com aviso e não cria o destino", async () => {
@@ -49,4 +52,7 @@ test("--help sai zero", () => {
     const result = runCli(["--help"], packageRoot);
     assert.equal(result.status, 0, result.stderr);
     assert.match(result.stdout, /--target/);
+    assert.match(result.stdout, /claude-code/);
+    assert.match(result.stdout, /codex/);
+    assert.match(result.stdout, /opencode/);
 });

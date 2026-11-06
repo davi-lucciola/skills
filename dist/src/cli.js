@@ -19,6 +19,13 @@ function packageRootFrom(importMetaUrl) {
     throw new Error("package.json não encontrado");
 }
 const packageRoot = packageRootFrom(import.meta.url);
+function destinationNames() {
+    const ids = visibleTargets().map((target) => target.id);
+    if (ids.length <= 1)
+        return ids.join("");
+    const last = ids[ids.length - 1];
+    return `${ids.slice(0, -1).join(", ")} ou ${last}`;
+}
 export function parseArgs(argv) {
     const flags = {
         target: null,
@@ -40,7 +47,7 @@ export function parseArgs(argv) {
         else if (arg === "--target" || arg === "-t") {
             const value = argv[index + 1];
             if (!value || value.startsWith("-")) {
-                throw new Error("Informe o destino depois de --target: cursor ou agents.");
+                throw new Error(`Informe o destino depois de --target: ${destinationNames()}.`);
             }
             flags.target = value;
             index += 1;
@@ -48,7 +55,7 @@ export function parseArgs(argv) {
         else if (arg.startsWith("--target=")) {
             flags.target = arg.slice("--target=".length);
             if (!flags.target) {
-                throw new Error("Informe o destino depois de --target: cursor ou agents.");
+                throw new Error(`Informe o destino depois de --target: ${destinationNames()}.`);
             }
         }
         else {
@@ -58,7 +65,7 @@ export function parseArgs(argv) {
     if (flags.target) {
         const target = targets[flags.target];
         if (!target) {
-            throw new Error(`Destino desconhecido: ${flags.target}. Use cursor ou agents.`);
+            throw new Error(`Destino desconhecido: ${flags.target}. Use ${destinationNames()}.`);
         }
         if (!target.visible) {
             throw new Error(`Destino ainda não disponível: ${flags.target}.`);
@@ -72,8 +79,12 @@ export function helpText() {
 Instala as skills deste pacote no repositório atual ou na home.
 
 Opções:
-  --target, -t cursor|agents   Destino. cursor grava em .cursor/skills.
-                               agents grava em .agents/skills.
+  --target, -t <destino>       ${destinationNames()}.
+                               cursor grava em .cursor/skills.
+                               claude-code grava em .claude/skills.
+                               agents, codex e opencode no repositório gravam
+                               em .agents/skills. Na home, opencode usa
+                               ~/.config/opencode/skills.
   --global, -g                 Instala na home em vez do repositório atual.
   --yes, -y                    Substitui skills existentes sem perguntar.
   --help, -h                   Mostra esta ajuda.
@@ -89,7 +100,7 @@ async function chooseTarget(flags) {
     if (flags.target)
         return flags.target;
     if (!process.stdin.isTTY) {
-        throw new Error("Informe --target cursor ou --target agents.");
+        throw new Error(`Informe --target. Destinos: ${destinationNames()}.`);
     }
     const selected = await p.select({
         message: "Onde instalar?",

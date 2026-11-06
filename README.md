@@ -1,6 +1,6 @@
 # Skills
 
-Instalador das skills deste repositório. Este primeiro commit só traz o comando. Cada skill entra depois, como uma pasta com `SKILL.md`.
+Instalador das skills deste repositório. Cada skill entra depois, como uma pasta com `SKILL.md`.
 
 Rode na raiz do repositório que deve receber as skills:
 
@@ -8,16 +8,24 @@ Rode na raiz do repositório que deve receber as skills:
 npx --yes github:davi-lucciola/skills
 ```
 
-O comando pergunta duas coisas.
+O comando pergunta o destino e o escopo.
 
 - **Cursor** copia para `.cursor/skills` neste repositório, ou para `~/.cursor/skills` na home. Só o Cursor lê esse caminho.
-- **Padrão universal** copia para `.agents/skills`, ou para `~/.agents/skills`. O Cursor também lê esse caminho. OpenCode, Devin, Windsurf, Amp e Pi ainda não aparecem no menu.
+- **Padrão universal** copia para `.agents/skills`, ou para `~/.agents/skills`. O Cursor também lê esse caminho.
+- **Claude Code** copia para `.claude/skills`, ou para `~/.claude/skills`.
+- **Codex** copia para `.agents/skills`, ou para `~/.agents/skills`. É a mesma pasta do padrão universal.
+- **OpenCode** copia para `.agents/skills` neste repositório, ou para `~/.config/opencode/skills` na home.
+
+Devin, Windsurf, Amp e Pi ainda não aparecem no menu.
 
 Para pular as perguntas:
 
 ```bash
 npx --yes github:davi-lucciola/skills --target cursor --yes
 npx --yes github:davi-lucciola/skills --target agents --global --yes
+npx --yes github:davi-lucciola/skills --target claude-code --yes
+npx --yes github:davi-lucciola/skills --target codex --global --yes
+npx --yes github:davi-lucciola/skills --target opencode --global --yes
 ```
 
 `--yes` só confirma a substituição de uma skill que já existe. Sem `--global`, o destino é o repositório em que o comando rodou.
