@@ -6,6 +6,15 @@ Read this before launching a subagent. `implement-feature` points here so the la
 
 Run `implement-feature` on a high or xhigh effort. This file does not name a model id. The child runs on the parent's model and on the parent's effort.
 
+The parent reads a single repo, writes the plan, codes a single contract, runs the suite, and opens the PR.
+
+## Who launches
+
+- **Explorer.** More than one repo. One `explore-feature` per repo, in parallel. A single repo stays with the parent.
+- **Coder.** Two or more contracts with disjoint owned paths, or contracts in different repos. One contract stays with the parent. A fix resumes this same coder by its id.
+- **Reviewer.** After the code is committed. One per repo, in parallel when the feature spans repos. The prompt is the contract and `git diff <base>...HEAD`.
+- **Tester.** A Scenario in `plan.md` that the suite does not cover. The prompt points at those scenarios. The parent runs the suite.
+
 ## Which tool you have
 
 The tool you will call is the host.
@@ -22,7 +31,7 @@ Pass the parent's model.
 - Claude Code: omit `model` and `effort`.
 - Codex: omit `model` and `reasoning_effort`. Keep `fork_turns: none`.
 
-`fork_turns: none` starts a fresh thread. The prompt carries the contract, the notes, and the findings. A child does not inherit this conversation. `inherit` is the model only.
+`fork_turns: none` starts a fresh thread. The prompt carries a path under `.feature-evidence/<slug>/` and the contract. A review prompt carries the contract and `git diff <base>...HEAD`. A resumed coder carries the findings. A child does not inherit this conversation. `inherit` is the model only.
 
 ## When that launch is refused
 

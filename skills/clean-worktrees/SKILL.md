@@ -12,7 +12,7 @@ The user invokes this skill. Remove each leftover sibling worktree once its pull
 
 The original repository is the main worktree on the first line of `git worktree list`, not a linked worktree. Call it `<original>` at `<parent>/<name>`.
 
-A candidate is a directory whose path is `<parent>/<name>--<slug>` with a non-empty slug. Those directories are the siblings of `<original>`. A worktree registered at any other path stays off the list. When this session is already inside `<name>--<slug>`, the candidates are still the siblings of `<original>`, never children of the linked worktree.
+A candidate is a directory whose path is `<parent>/<name>--<slug>` with a non-empty slug. The slug is that suffix. A branch prefix such as `feat/` stays on the branch name. Those directories are the siblings of `<original>`. A worktree registered at any other path stays off the list. When this session is already inside `<name>--<slug>`, the candidates are still the siblings of `<original>`, never children of the linked worktree.
 
 Done when every candidate path matches `<parent>/<name>--<slug>` with a non-empty slug, and `<original>` itself is not a candidate.
 

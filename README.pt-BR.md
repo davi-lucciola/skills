@@ -11,14 +11,15 @@ Rode o comando na raiz do repositório que deve receber as skills.
 Instale as skills do seu harness na seção abaixo e peça ao agente para usar `ask-davi`. Essa skill é o mapa deste pacote: ela diz qual skill ou passo cabe no que você quer fazer.
 
 - `ask-davi` — mapa do fluxo. Use quando não souber qual skill ou passo cabe.
-- `implement-feature` — entrega uma feature: exploração, plano aceito, coders em paralelo, review, teste numa instância rodando e pull request para `develop`, `main` ou `master`, o primeiro desses refs no `origin`.
-- `explore-feature` — lê o repositório e devolve uma nota com arquivos, regras de negócio e lacunas.
-- `code-feature` — implementa um contrato num worktree, ou corrige findings de review e bugs de teste.
+- `implement-feature` — entrega uma feature. O pai lê um repositório só, escreve o plano aceito, codifica um contrato, roda a suíte e abre o pull request para `develop`, `main` ou `master`, o primeiro desses refs no `origin`. Exploradores e coders rodam em paralelo só quando o trabalho é de fato paralelo.
+- `explore-feature` — lê o repositório e devolve uma nota com arquivos, regras de negócio, seams e lacunas.
+- `code-feature` — implementa um contrato num worktree, ou corrige findings de review e bugs de teste. Também guarda a convenção de branch e commit.
 - `review-feature` — revisa o diff contra o contrato em Standards e Spec, e deixa o código como está.
-- `validate-feature` — valida uma feature que já está rodando: casos de negócio, curl, linhas do banco e screenshots.
+- `validate-feature` — prova os cenários que a suíte não cobriu, numa instância rodando: curl, linhas do banco e screenshots.
+- `pr` — escreve o corpo do pull request: um visual pequeno, evidência antes/depois e a porta do merge.
 - `clean-worktrees` — remove o worktree irmão depois que o pull request entra na branch de integração no `origin`.
 
-O passo do pull request segue a skill `pr` do Matt Pocock. Instale essa skill à parte. Este pacote não a inclui.
+O passo do pull request segue a skill `pr` deste pacote.
 
 ## Cursor
 
