@@ -11,7 +11,7 @@ Rode o comando na raiz do repositório que deve receber as skills.
 Instale as skills do seu harness na seção abaixo e peça ao agente para usar `ask-davi`. Essa skill é o mapa deste pacote: ela diz qual skill ou passo cabe no que você quer fazer.
 
 - `ask-davi` — mapa do fluxo. Use quando não souber qual skill ou passo cabe.
-- `implement-feature` — entrega uma feature: exploração, plano aceito, coders em paralelo, review, teste numa instância rodando e pull request para `develop`.
+- `implement-feature` — entrega uma feature: exploração, plano aceito, coders em paralelo, review, teste numa instância rodando e pull request para `develop`, `main` ou `master`, o primeiro desses refs no `origin`.
 - `explore-feature` — lê o repositório e devolve uma nota com arquivos, regras de negócio e lacunas.
 - `code-feature` — implementa um contrato num worktree, ou corrige findings de review e bugs de teste.
 - `review-feature` — revisa o diff contra o contrato em Standards e Spec, e deixa o código como está.

@@ -10,7 +10,7 @@ You don't remember every skill, so ask.
 
 Before stating what a skill does or recommending a step be skipped, read that skill's `SKILL.md`. The lines below are orientation.
 
-The parent session runs at high or xhigh effort. Implementation runs in a sibling worktree, one per repo. Parallel work is the explorers, and the coders whose contracts do not share paths. The plan gate is the one stop. After the tests are clean, the root agent opens one PR per repo into `develop` in that same turn, with the installed `pr` skill. The reply ends with the URL. This package does not ship `pr`. When it is missing, install Matt Pocock's skills.
+The parent session runs at high or xhigh effort. Implementation runs in a sibling worktree, one per repo. Parallel work is the explorers, and the coders whose contracts do not share paths. The plan gate is the one stop. After the tests are clean, the root agent opens one PR per repo into `<base>` in that same turn, with the installed `pr` skill. `<base>` is the first of `develop`, `main`, and `master` that exists on `origin`. The reply ends with the URL. This package does not ship `pr`. When it is missing, install Matt Pocock's skills.
 
 ## The flow
 
@@ -19,7 +19,7 @@ The parent session runs at high or xhigh effort. Implementation runs in a siblin
 3. **Code.** One `code-feature` subagent per contract, in parallel, inside `<parent>/<name>--<slug>`.
 4. **Code review.** `review-feature` reports Standards and Spec. Findings launch a coder. That fix is not reviewed again.
 5. **Test.** One `validate-feature` tester for the whole feature, on a running instance. Bugs launch a coder, then the tester runs again. The same bug twice stops the flow.
-6. **PR.** The parent opens one PR per changed repo into `develop`, following `pr`, in the same turn as a clean validation. The reply ends with the URL.
+6. **PR.** The parent opens one PR per changed repo into `<base>` (`develop`, then `main`, then `master`), following `pr`, in the same turn as a clean validation. The reply ends with the URL.
 
 ## The skills
 
@@ -45,8 +45,8 @@ Business cases on a running instance, plus one case the automated tests miss. AP
 
 ### `pr`
 
-Matt Pocock's skill, installed separately. The parent follows it in the same turn as a clean validation. The base is `develop`. The evidence is `.feature-evidence/<slug>/`. The reply ends with the PR URL.
+Matt Pocock's skill, installed separately. The parent follows it in the same turn as a clean validation. The base is `<base>`: `develop`, then `main`, then `master`, the first ref on `origin`. The evidence is `.feature-evidence/<slug>/`. The reply ends with the PR URL.
 
 ### `clean-worktrees`
 
-The user invokes it after the pull request. It removes `<parent>/<name>--<slug>` only once the PR is merged into the integration branch on `origin` (`origin/develop` when that ref exists, otherwise the default branch from `origin/HEAD`). A missing local `develop` or `main` is created from that remote ref.
+The user invokes it after the pull request. It removes `<parent>/<name>--<slug>` only once the PR is merged into a qualifying base on `origin`: each of `develop`, `main`, and `master` that exists there, plus the default branch from `origin/HEAD` when that name is different. A missing local branch of one of those names is created from that remote ref.

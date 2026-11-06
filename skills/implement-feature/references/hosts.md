@@ -1,10 +1,10 @@
 # Hosts and models
 
-Read this before launching a subagent. `implement-feature` points here so the model rows stay in one place.
+Read this before launching a subagent. `implement-feature` points here so the launch rule stays in one place.
 
 ## Parent
 
-Run `implement-feature` on a high or xhigh effort. This file does not pin the parent's model id. Pass the subagent rows below as written. When the named model is unavailable, follow [When the named model is unavailable](#when-the-named-model-is-unavailable).
+Run `implement-feature` on a high or xhigh effort. This file does not name a model id. The child runs on the parent's model and on the parent's effort.
 
 ## Which tool you have
 
@@ -14,29 +14,24 @@ The tool you will call is the host.
 - **Claude Code** has the Agent tool.
 - **Codex** has `spawn_agent`.
 
-## Explorer
+## Launch
 
-- Cursor: Task `model` `composer-2.5`. Fast stays off. `composer-2.5-fast` is a different model.
-- Codex: `model` `gpt-5.6-luna`, `reasoning_effort` `low`. That effort is the thinking level.
-- Claude Code: Agent `model` `haiku`, `effort` `medium`. The Agent tool takes the alias `haiku`, not a full model id. Haiku 5.5 already thinks, and the Agent tool has no per-subagent thinking switch.
+Pass the parent's model.
 
-## Coder
+- Cursor: Task `model` `inherit`.
+- Claude Code: omit `model` and `effort`.
+- Codex: omit `model` and `reasoning_effort`. Keep `fork_turns: none`.
 
-- Cursor: Task `model` `grok-4.7-high`.
-- Codex: `model` `gpt-5.6-terra`, `reasoning_effort` `medium`.
-- Claude Code: Agent `model` `sonnet`, `effort` `high`.
+`fork_turns: none` starts a fresh thread. The prompt carries the contract, the notes, and the findings. A child does not inherit this conversation. `inherit` is the model only.
 
-## Reviewer and tester
+## When that launch is refused
 
-Same Cursor and Codex rows as the coder. On Claude Code both use Agent `model` `sonnet` and `effort` `medium`. The coder stays at high on Claude Code.
+Read the live allowlist the host exposed in this session. Launch once more with one slug copied from that list.
 
-## When the named model is unavailable
+- Explorer: the entry the list marks as faster or smaller, when the list shows that mark.
+- Coder, reviewer, and tester: an entry of the parent's family, when the list shows that family, at the parent's capability.
 
-Launch with the row above.
-
-When that model is absent from the live allowlist, the host rejects the slug, or the launch fails for any other reason, launch the subagent on the parent model. On Cursor, Task `model` is `inherit`. On Claude Code and Codex, omit the model override so the child uses the current agent's model.
-
-`inherit` selects the parent model. The row stays the preferred model. A fast slug, another effort, Sol, and Terra are different models and stay off this launch.
+The slug comes from the list. A second refusal ends the launch. Show the host error and the list.
 
 ## How to launch
 
@@ -45,28 +40,24 @@ Cursor:
 ```text
 Task
   subagent_type: generalPurpose
-  model: <slug from the row, or inherit>
+  model: inherit
 ```
+
+When the first launch is refused, `model` is the slug copied from the live allowlist.
 
 Claude Code:
 
 ```text
 Agent
-  model: <alias from the row>
-  effort: <effort from the row>
 ```
 
-When the named model is unavailable, omit `model` and `effort`.
+Omit `model` and `effort` on the first launch. When that launch is refused, set `model` to the slug copied from the live allowlist.
 
 Codex:
 
 ```text
 spawn_agent
-  model: <id from the row>
-  reasoning_effort: <effort from the row>
   fork_turns: none
 ```
 
-When the named model is unavailable, omit `model` and `reasoning_effort`. Keep `fork_turns: none`.
-
-`fork_turns: none` starts a fresh thread. The prompt carries the contract, the notes, and the findings. A child does not inherit this conversation. `inherit` is the model only.
+Omit `model` and `reasoning_effort` on the first launch. When that launch is refused, set `model` to the slug copied from the live allowlist. Keep `fork_turns: none`.

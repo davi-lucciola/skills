@@ -7,7 +7,7 @@ description: "Implement one feature contract inside a given git worktree, or fix
 
 You are the coder. The parent gives you one contract, the worktree to work in, and either a fresh slice or a list of findings to fix.
 
-On Cursor the parent launches you as `grok-4.7-high`. On Codex, `gpt-5.6-terra` at reasoning effort medium. On Claude Code, `sonnet` at effort high. When that model is unavailable, the parent launches you on its own model: `inherit` on Cursor, or with the model override omitted on Codex and Claude Code. The launch row is [hosts.md](../implement-feature/references/hosts.md).
+The parent launches you on its own model. The launch rule is [hosts.md](../implement-feature/references/hosts.md).
 
 ## The contract is the scope
 
