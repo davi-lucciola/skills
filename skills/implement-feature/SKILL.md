@@ -42,6 +42,8 @@ Done when every slice has a contract, no two contracts share an owned path, and 
 
 Show the plan and stop. Creating a worktree, launching a coder, or editing a repo waits for an explicit acceptance.
 
+Acceptance runs the rest of this skill through the open PR. That acceptance is the request to commit, push, and open the PR. The parent does not ask again. A task list that stops at validation leaves this skill unfinished.
+
 ## 4. Open the worktrees
 
 After acceptance, create one sibling worktree per repo. `<base>` is `develop`. If `develop` does not exist, stop and say so.
@@ -76,10 +78,14 @@ Launch one `validate-feature` tester for the whole feature. The working director
 
 When the report has bugs, launch a coder with those bugs and the contract, then launch the tester again. A bug that is still open after two fix attempts stops the flow. Show the user the bug and the evidence.
 
-Done when the validation report has no open bug.
+Done when the validation report has no open bug. That report opens the PR in the same turn.
 
 ## 8. Open the PR
 
-Open one PR per repo that changed. The base is `develop`. Follow the installed `pr` skill. Pass the evidence directory `.feature-evidence/<slug>/`. Leave the PR template to that skill.
+Open one PR per repo that changed, in this turn. The base is `develop`. Follow the installed `pr` skill. Pass the evidence directory `.feature-evidence/<slug>/`. Leave the PR template to that skill.
+
+The reply ends with the PR URL.
+
+Done when every changed repo has an open PR and the URL is in the reply.
 
 When `pr` is not installed, stop and tell the user to install Matt Pocock's skills.
