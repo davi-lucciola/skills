@@ -11,7 +11,7 @@ Run the command from the root of the repository that should receive the skills.
 Install the skills for your harness using the section below, then ask the agent to use `ask-davi`. That skill is the map of this package: it says which skill or step fits what you want to do.
 
 - `ask-davi` — map of the flow. Use it when you are unsure which skill or step fits.
-- `implement-feature` — ships one feature: explore, an accepted plan, parallel coders, review, a test on a running instance, and a pull request into `develop`.
+- `implement-feature` — ships one feature: explore, an accepted plan, parallel coders, review, a test on a running instance, and a pull request into `develop`, `main`, or `master`, the first of those refs on `origin`.
 - `explore-feature` — reads the repository and returns a note of files, business rules, and open gaps.
 - `code-feature` — implements one contract inside a worktree, or fixes review findings and test bugs.
 - `review-feature` — reviews the diff against the contract on Standards and Spec, and leaves the code unchanged.

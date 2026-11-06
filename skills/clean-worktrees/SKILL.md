@@ -18,19 +18,19 @@ Done when every candidate path matches `<parent>/<name>--<slug>` with a non-empt
 
 ## 2. Resolve the qualifying bases
 
-Qualifying bases come from the remote `origin`. `develop` is not required to exist. A local `develop` or `main` with no matching ref on `origin` is not a qualifying base.
+Qualifying bases come from the remote `origin`. A name that exists only as a local branch stays out of the set.
 
 `git -C <original> fetch origin`.
 
-Read the default branch with `git -C <original> symbolic-ref --short refs/remotes/origin/HEAD`, and remove the `origin/` prefix. When that ref is missing, stop and report that the remote has no default branch. Do not substitute a local `main` or `master`.
+Read the default branch with `git -C <original> symbolic-ref --short refs/remotes/origin/HEAD`, and remove the `origin/` prefix. When that ref is missing, stop and report that the remote has no default branch.
 
-When `refs/remotes/origin/develop` exists, add `develop`. The default branch resolved above stays qualifying too. When `origin/develop` does not exist, the only qualifying base is that default branch.
+For each of `develop`, `main`, and `master`, add the name when `refs/remotes/origin/<name>` exists. Add the default branch resolved above when its name is different. The qualifying set is those refs.
 
 For each qualifying name, create the local branch from the remote when the local branch is absent:
 
 `git -C <original> branch <name> origin/<name>`
 
-That is the only way a local `develop` or `main` is created here. An existing local branch stays where it is. The merge check uses `origin/<name>`, not commits that exist only on the local branch.
+That is the only way a local `develop`, `main`, or `master` is created here. An existing local branch stays where it is. The merge check uses `origin/<name>`, not commits that exist only on the local branch.
 
 A pull request counts as landed when `state` is `MERGED` and `baseRefName` is one of those qualifying bases. A merge into any other base does not.
 

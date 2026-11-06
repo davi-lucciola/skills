@@ -1,12 +1,12 @@
 ---
 name: implement-feature
-description: "Ship one feature through explore, an accepted plan, parallel coders, review, and a running-instance test, then open a PR to develop."
+description: "Ship one feature through explore, an accepted plan, parallel coders, review, and a running-instance test, then open a PR to the integration branch: develop, then main, then master."
 disable-model-invocation: true
 ---
 
 # Implement a feature
 
-You are the parent. Run this session at high or xhigh effort. The subagent models live in [references/hosts.md](references/hosts.md). Read that file before the first launch and pass its row for the tool you actually have. When that model is unavailable, pass `inherit` on Cursor, or omit the model override on Claude Code and Codex, so the subagent uses this agent's model.
+You are the parent. Run this session at high or xhigh effort. Launch each subagent on this agent's model. The launch rule is [references/hosts.md](references/hosts.md). Read that file before the first launch.
 
 A **contract** is one slice of the feature: one repo, or one seam whose files do not overlap another slice. Two contracts run together only when their owned paths do not overlap. Two repos means two coder subagents.
 
@@ -46,10 +46,11 @@ Acceptance runs the rest of this skill through the open PR. That acceptance is t
 
 ## 4. Open the worktrees
 
-After acceptance, create one sibling worktree per repo. `<base>` is `develop`. If `develop` does not exist, stop and say so.
+After acceptance, fetch `origin` and resolve `<base>`. `<base>` is the first of `develop`, `main`, and `master` whose ref `refs/remotes/origin/<name>` exists. Create the worktree from `origin/<base>`. The pull request uses that same name. When none of the three refs exist, stop and say so. A branch that exists only locally is not `<base>`.
 
 ```text
-git -C <parent>/<name> worktree add <parent>/<name>--<slug> -b feat/<slug> <base>
+git -C <parent>/<name> fetch origin
+git -C <parent>/<name> worktree add <parent>/<name>--<slug> -b feat/<slug> origin/<base>
 ```
 
 If `feat/<slug>` is already checked out somewhere, stop and say where. Leave the original branch as it is.
@@ -82,7 +83,7 @@ Done when the validation report has no open bug. That report opens the PR in the
 
 ## 8. Open the PR
 
-Open one PR per repo that changed, in this turn. The base is `develop`. Follow the installed `pr` skill. Pass the evidence directory `.feature-evidence/<slug>/`. Leave the PR template to that skill.
+Open one PR per repo that changed, in this turn. The base is `<base>` from step 4: `develop`, then `main`, then `master`. Follow the installed `pr` skill. Pass the evidence directory `.feature-evidence/<slug>/`. Leave the PR template to that skill.
 
 The reply ends with the PR URL.
 

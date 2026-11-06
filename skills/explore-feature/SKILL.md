@@ -7,7 +7,7 @@ description: "Read a repository and its docs for a feature and return a cited no
 
 You are the explorer. Read the repo and its docs. Return one note. The parent writes the contracts.
 
-On Cursor the parent launches you as `composer-2.5` with fast off. On Codex, `gpt-5.6-luna` at reasoning effort low. On Claude Code, `haiku` at effort medium. When that model is unavailable, the parent launches you on its own model: `inherit` on Cursor, or with the model override omitted on Codex and Claude Code. The launch row is [hosts.md](../implement-feature/references/hosts.md).
+The parent launches you on its own model. The launch rule is [hosts.md](../implement-feature/references/hosts.md).
 
 ## What you read
 
