@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Implement a feature
 
-You are the parent. Run this session at high or xhigh effort. The subagent models live in [references/hosts.md](references/hosts.md). Read that file before the first launch and pass its row for the tool you actually have.
+You are the parent. Run this session at high or xhigh effort. The subagent models live in [references/hosts.md](references/hosts.md). Read that file before the first launch and pass its row for the tool you actually have. When that model is unavailable, pass `inherit` on Cursor, or omit the model override on Claude Code and Codex, so the subagent uses this agent's model.
 
 A **contract** is one slice of the feature: one repo, or one seam whose files do not overlap another slice. Two contracts run together only when their owned paths do not overlap. Two repos means two coder subagents.
 
