@@ -22,7 +22,7 @@ Qualifying bases come from this repo. `develop` is not required to exist.
 
 Read the default branch with `git -C <original> symbolic-ref --short refs/remotes/origin/HEAD`, and remove the `origin/` prefix. When that ref is missing, the default branch is `main` when `main` exists, and `master` otherwise.
 
-When `develop` exists locally or as `origin/develop`, add `develop` as a qualifying base as well. In that gitflow, the default branch (`main` or `master`) stays qualifying too. When `develop` does not exist, the only qualifying base is the default branch.
+When `develop` exists locally or as `origin/develop`, add `develop` as a qualifying base as well. In that gitflow, the resolved default branch stays qualifying too. When `develop` does not exist, the only qualifying base is the default branch.
 
 A pull request counts as landed when `state` is `MERGED` and `baseRefName` is one of those qualifying bases. A merge into any other base does not.
 
@@ -32,12 +32,12 @@ Done when the qualifying bases are the default branch, plus `develop` when this 
 
 `git -C <original> worktree list --porcelain` shows whether a candidate is a worktree of `<original>`. A `branch refs/heads/<branch>` line names the branch. A `detached` line means the checkout is detached. `git -C <worktree> rev-parse HEAD` is the tip. `git -C <worktree> status --porcelain` is the cleanliness check.
 
-`gh pr list --head <branch> --state all --json number,state,baseRefName,headRefOid,url`, run with `git -C <original>`.
+Run this command with its working directory set to `<original>`: `gh pr list --head <branch> --state all --json number,state,baseRefName,headRefOid,url`.
 
 Keep the directory and report it when any of these is true:
 
 - It is not a worktree of `<original>`.
-- The checkout is detached, or the branch name is a qualifying integration branch (`main`, `master`, or `develop`).
+- The checkout is detached, or the branch name is one of the qualifying bases resolved in step 2.
 - That `gh pr list` returns no pull request.
 - Any pull request for that head is `OPEN`.
 - No pull request is `MERGED` into a qualifying base. A closed pull request that was not merged, and a merge into some other base, keep the directory.
