@@ -49,4 +49,4 @@ Matt Pocock's skill, installed separately. The parent follows it in the same tur
 
 ### `clean-worktrees`
 
-The user invokes it after the pull request. It removes `<parent>/<name>--<slug>` only once the PR is merged into the repo's integration branch (`develop` when the repo has it, otherwise the default branch).
+The user invokes it after the pull request. It removes `<parent>/<name>--<slug>` only once the PR is merged into the integration branch on `origin` (`origin/develop` when that ref exists, otherwise the default branch from `origin/HEAD`). A missing local `develop` or `main` is created from that remote ref.

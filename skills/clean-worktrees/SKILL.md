@@ -18,15 +18,23 @@ Done when every candidate path matches `<parent>/<name>--<slug>` with a non-empt
 
 ## 2. Resolve the qualifying bases
 
-Qualifying bases come from this repo. `develop` is not required to exist.
+Qualifying bases come from the remote `origin`. `develop` is not required to exist. A local `develop` or `main` with no matching ref on `origin` is not a qualifying base.
 
-Read the default branch with `git -C <original> symbolic-ref --short refs/remotes/origin/HEAD`, and remove the `origin/` prefix. When that ref is missing, the default branch is `main` when `main` exists, and `master` otherwise.
+`git -C <original> fetch origin`.
 
-When `develop` exists locally or as `origin/develop`, add `develop` as a qualifying base as well. In that gitflow, the resolved default branch stays qualifying too. When `develop` does not exist, the only qualifying base is the default branch.
+Read the default branch with `git -C <original> symbolic-ref --short refs/remotes/origin/HEAD`, and remove the `origin/` prefix. When that ref is missing, stop and report that the remote has no default branch. Do not substitute a local `main` or `master`.
+
+When `refs/remotes/origin/develop` exists, add `develop`. The default branch resolved above stays qualifying too. When `origin/develop` does not exist, the only qualifying base is that default branch.
+
+For each qualifying name, create the local branch from the remote when the local branch is absent:
+
+`git -C <original> branch <name> origin/<name>`
+
+That is the only way a local `develop` or `main` is created here. An existing local branch stays where it is. The merge check uses `origin/<name>`, not commits that exist only on the local branch.
 
 A pull request counts as landed when `state` is `MERGED` and `baseRefName` is one of those qualifying bases. A merge into any other base does not.
 
-Done when the qualifying bases are the default branch, plus `develop` when this repo has it.
+Done when every qualifying base is a branch on `origin`, and each missing local branch was created from `origin/<name>`.
 
 ## 3. Classify each candidate
 
