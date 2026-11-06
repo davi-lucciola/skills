@@ -46,3 +46,7 @@ Business cases on a running instance, plus one case the automated tests miss. AP
 ### `pr`
 
 Matt Pocock's skill, installed separately. The parent follows it in the same turn as a clean validation. The base is `develop`. The evidence is `.feature-evidence/<slug>/`. The reply ends with the PR URL.
+
+### `clean-worktrees`
+
+The user invokes it after the pull request. It removes `<parent>/<name>--<slug>` only once the PR is merged into the integration branch on `origin` (`origin/develop` when that ref exists, otherwise the default branch from `origin/HEAD`). A missing local `develop` or `main` is created from that remote ref.
