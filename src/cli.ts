@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -6,13 +7,28 @@ import { discoverSkills } from "./discover.js";
 import { installSkill, pathExists } from "./install.js";
 import { resolveDestination, targets, visibleTargets } from "./targets.js";
 
-const packageRoot = path.resolve(
-  fileURLToPath(new URL(".", import.meta.url)),
-  "..",
-);
+export type Flags = {
+  target: string | null;
+  global: boolean;
+  yes: boolean;
+  help: boolean;
+};
 
-export function parseArgs(argv) {
-  const flags = {
+function packageRootFrom(importMetaUrl: string): string {
+  let dir = path.dirname(fileURLToPath(importMetaUrl));
+  while (true) {
+    if (existsSync(path.join(dir, "package.json"))) return dir;
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  throw new Error("package.json não encontrado");
+}
+
+const packageRoot = packageRootFrom(import.meta.url);
+
+export function parseArgs(argv: string[]): Flags {
+  const flags: Flags = {
     target: null,
     global: false,
     yes: false,
@@ -63,7 +79,7 @@ export function parseArgs(argv) {
   return flags;
 }
 
-export function helpText() {
+export function helpText(): string {
   return `Uso: skills [opções]
 
 Instala as skills deste pacote no repositório atual ou na home.
@@ -79,12 +95,12 @@ Sem --target, o instalador pergunta o destino e o escopo.
 `;
 }
 
-function cancel() {
+function cancel(): never {
   p.cancel("Instalação cancelada.");
   process.exit(0);
 }
 
-async function chooseTarget(flags) {
+async function chooseTarget(flags: Flags): Promise<string> {
   if (flags.target) return flags.target;
   if (!process.stdin.isTTY) {
     throw new Error("Informe --target cursor ou --target agents.");
@@ -102,7 +118,7 @@ async function chooseTarget(flags) {
   return selected;
 }
 
-async function chooseScope(flags) {
+async function chooseScope(flags: Flags): Promise<"project" | "global"> {
   if (flags.global) return "global";
   if (!process.stdin.isTTY) return "project";
 
@@ -110,12 +126,12 @@ async function chooseScope(flags) {
     message: "Em qual escopo?",
     options: [
       {
-        value: "project",
+        value: "project" as const,
         label: "Este repositório",
         hint: process.cwd(),
       },
       {
-        value: "global",
+        value: "global" as const,
         label: "Home",
         hint: "Disponível em todos os projetos",
       },
@@ -125,7 +141,7 @@ async function chooseScope(flags) {
   return selected;
 }
 
-async function confirmOverwrite(skillName, flags) {
+async function confirmOverwrite(skillName: string, flags: Flags): Promise<boolean> {
   if (flags.yes) return true;
   if (!process.stdin.isTTY) {
     throw new Error(
@@ -140,7 +156,7 @@ async function confirmOverwrite(skillName, flags) {
   return confirmed;
 }
 
-export async function main(argv) {
+export async function main(argv: string[]): Promise<void> {
   const flags = parseArgs(argv);
   if (flags.help) {
     console.log(helpText().trimEnd());
@@ -164,9 +180,9 @@ export async function main(argv) {
     return;
   }
 
-  const installed = [];
-  const replaced = [];
-  const skipped = [];
+  const installed: string[] = [];
+  const replaced: string[] = [];
+  const skipped: string[] = [];
 
   for (const skill of skills) {
     const dest = path.join(destination, skill.name);

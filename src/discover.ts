@@ -3,12 +3,28 @@ import path from "node:path";
 
 const MAX_DEPTH = 3;
 
-async function listDirs(dir) {
+export type Skill = {
+  name: string;
+  dir: string;
+};
+
+function errorCode(error: unknown): string | undefined {
+  if (
+    error instanceof Error &&
+    "code" in error &&
+    typeof error.code === "string"
+  ) {
+    return error.code;
+  }
+  return undefined;
+}
+
+async function listDirs(dir: string): Promise<string[]> {
   let entries;
   try {
     entries = await fs.readdir(dir, { withFileTypes: true });
   } catch (error) {
-    if (error.code === "ENOENT") return [];
+    if (errorCode(error) === "ENOENT") return [];
     throw error;
   }
 
@@ -18,17 +34,17 @@ async function listDirs(dir) {
     .sort();
 }
 
-async function hasSkillFile(dir) {
+async function hasSkillFile(dir: string): Promise<boolean> {
   try {
     const stat = await fs.stat(path.join(dir, "SKILL.md"));
     return stat.isFile();
   } catch (error) {
-    if (error.code === "ENOENT") return false;
+    if (errorCode(error) === "ENOENT") return false;
     throw error;
   }
 }
 
-async function walk(dir, depth, found) {
+async function walk(dir: string, depth: number, found: Skill[]): Promise<void> {
   if (depth > MAX_DEPTH) return;
 
   if (depth > 0 && (await hasSkillFile(dir))) {
@@ -43,11 +59,11 @@ async function walk(dir, depth, found) {
   }
 }
 
-export async function discoverSkills(skillsRoot) {
-  const found = [];
+export async function discoverSkills(skillsRoot: string): Promise<Skill[]> {
+  const found: Skill[] = [];
   await walk(skillsRoot, 0, found);
 
-  const seen = new Map();
+  const seen = new Map<string, string>();
   for (const skill of found) {
     const previous = seen.get(skill.name);
     if (previous) {

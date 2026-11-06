@@ -10,7 +10,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "node --test",
+    "build": "tsc",
+    "test": "tsc && node --test dist/test",
     "start": "node ./bin/cli.js"
   },
   "repository": {
@@ -19,5 +20,9 @@
   },
   "dependencies": {
     "@clack/prompts": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2"
   }
 }

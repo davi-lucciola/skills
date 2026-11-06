@@ -12,9 +12,9 @@ test("o menu mostra só cursor e agents", () => {
     ["cursor", "agents"],
   );
   for (const id of ["opencode", "devin", "windsurf", "amp", "pi"]) {
-    assert.equal(targets[id].visible, false);
-    assert.ok(targets[id].projectDir);
-    assert.ok(targets[id].globalDir);
+    assert.equal(targets[id]?.visible, false);
+    assert.ok(targets[id]?.projectDir);
+    assert.ok(targets[id]?.globalDir);
   }
 });
 

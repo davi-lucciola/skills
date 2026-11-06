@@ -5,7 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import { discoverSkills } from "../src/discover.js";
 
-async function writeSkill(root, relativeDir) {
+async function writeSkill(root: string, relativeDir: string) {
   const dir = path.join(root, relativeDir);
   await fs.mkdir(dir, { recursive: true });
   await fs.writeFile(path.join(dir, "SKILL.md"), `---\nname: ${path.basename(dir)}\n---\n`);

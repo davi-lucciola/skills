@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -7,12 +8,20 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "../src/cli.js";
 
-const packageRoot = path.resolve(
-  fileURLToPath(new URL(".", import.meta.url)),
-  "..",
-);
+function packageRootFrom(importMetaUrl: string): string {
+  let dir = path.dirname(fileURLToPath(importMetaUrl));
+  while (true) {
+    if (existsSync(path.join(dir, "package.json"))) return dir;
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  throw new Error("package.json não encontrado");
+}
 
-function runCli(args, cwd) {
+const packageRoot = packageRootFrom(import.meta.url);
+
+function runCli(args: string[], cwd: string) {
   return spawnSync(process.execPath, [path.join(packageRoot, "bin/cli.js"), ...args], {
     cwd,
     encoding: "utf8",

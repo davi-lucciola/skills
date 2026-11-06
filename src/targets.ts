@@ -5,7 +5,16 @@ import path from "node:path";
  * `visible: false` reserva o harness. Ele não entra no menu até a implementação existir.
  * Os caminhos de opencode, devin, windsurf, amp e pi seguem o CLI skills.sh.
  */
-export const targets = {
+export type Target = {
+  id: string;
+  label: string;
+  hint: string;
+  visible: boolean;
+  projectDir: string;
+  globalDir: string;
+};
+
+export const targets: Record<string, Target> = {
   cursor: {
     id: "cursor",
     label: "Cursor",
@@ -64,11 +73,14 @@ export const targets = {
   },
 };
 
-export function visibleTargets() {
+export function visibleTargets(): Target[] {
   return Object.values(targets).filter((target) => target.visible);
 }
 
-export function resolveDestination(targetId, { scope, cwd, home }) {
+export function resolveDestination(
+  targetId: string,
+  { scope, cwd, home }: { scope: string; cwd: string; home: string },
+): string {
   const target = targets[targetId];
   if (!target) {
     throw new Error(`Destino desconhecido: ${targetId}`);
