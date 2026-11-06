@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -6,13 +7,37 @@ import { discoverSkills } from "./discover.js";
 import { installSkill, pathExists } from "./install.js";
 import { resolveDestination, targets, visibleTargets } from "./targets.js";
 
-const packageRoot = path.resolve(
-  fileURLToPath(new URL(".", import.meta.url)),
-  "..",
-);
+export type Flags = {
+  command: "install" | "update";
+  target: string | null;
+  global: boolean;
+  yes: boolean;
+  help: boolean;
+};
 
-export function parseArgs(argv) {
-  const flags = {
+function packageRootFrom(importMetaUrl: string): string {
+  let dir = path.dirname(fileURLToPath(importMetaUrl));
+  while (true) {
+    if (existsSync(path.join(dir, "package.json"))) return dir;
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  throw new Error("package.json não encontrado");
+}
+
+const packageRoot = packageRootFrom(import.meta.url);
+
+function destinationNames(): string {
+  const ids = visibleTargets().map((target) => target.id);
+  if (ids.length <= 1) return ids.join("");
+  const last = ids[ids.length - 1];
+  return `${ids.slice(0, -1).join(", ")} ou ${last}`;
+}
+
+export function parseArgs(argv: string[]): Flags {
+  const flags: Flags = {
+    command: "install",
     target: null,
     global: false,
     yes: false,
@@ -31,7 +56,7 @@ export function parseArgs(argv) {
       const value = argv[index + 1];
       if (!value || value.startsWith("-")) {
         throw new Error(
-          "Informe o destino depois de --target: cursor ou agents.",
+          `Informe o destino depois de --target: ${destinationNames()}.`,
         );
       }
       flags.target = value;
@@ -40,9 +65,14 @@ export function parseArgs(argv) {
       flags.target = arg.slice("--target=".length);
       if (!flags.target) {
         throw new Error(
-          "Informe o destino depois de --target: cursor ou agents.",
+          `Informe o destino depois de --target: ${destinationNames()}.`,
         );
       }
+    } else if (arg === "update") {
+      if (flags.command === "update") {
+        throw new Error("Argumento desconhecido: update");
+      }
+      flags.command = "update";
     } else {
       throw new Error(`Argumento desconhecido: ${arg}`);
     }
@@ -52,7 +82,7 @@ export function parseArgs(argv) {
     const target = targets[flags.target];
     if (!target) {
       throw new Error(
-        `Destino desconhecido: ${flags.target}. Use cursor ou agents.`,
+        `Destino desconhecido: ${flags.target}. Use ${destinationNames()}.`,
       );
     }
     if (!target.visible) {
@@ -63,14 +93,20 @@ export function parseArgs(argv) {
   return flags;
 }
 
-export function helpText() {
-  return `Uso: skills [opções]
+export function helpText(): string {
+  return `Uso: skills [update] [opções]
 
 Instala as skills deste pacote no repositório atual ou na home.
+Se a skill já existe, o comando pergunta e avisa que ela será
+substituída pela nova. update faz o mesmo.
 
 Opções:
-  --target, -t cursor|agents   Destino. cursor grava em .cursor/skills.
-                               agents grava em .agents/skills.
+  --target, -t <destino>       ${destinationNames()}.
+                               cursor grava em .cursor/skills.
+                               claude-code grava em .claude/skills.
+                               agents, codex e opencode no repositório gravam
+                               em .agents/skills. Na home, opencode usa
+                               ~/.config/opencode/skills.
   --global, -g                 Instala na home em vez do repositório atual.
   --yes, -y                    Substitui skills existentes sem perguntar.
   --help, -h                   Mostra esta ajuda.
@@ -79,15 +115,15 @@ Sem --target, o instalador pergunta o destino e o escopo.
 `;
 }
 
-function cancel() {
+function cancel(): never {
   p.cancel("Instalação cancelada.");
   process.exit(0);
 }
 
-async function chooseTarget(flags) {
+async function chooseTarget(flags: Flags): Promise<string> {
   if (flags.target) return flags.target;
   if (!process.stdin.isTTY) {
-    throw new Error("Informe --target cursor ou --target agents.");
+    throw new Error(`Informe --target. Destinos: ${destinationNames()}.`);
   }
 
   const selected = await p.select({
@@ -102,7 +138,7 @@ async function chooseTarget(flags) {
   return selected;
 }
 
-async function chooseScope(flags) {
+async function chooseScope(flags: Flags): Promise<"project" | "global"> {
   if (flags.global) return "global";
   if (!process.stdin.isTTY) return "project";
 
@@ -110,12 +146,12 @@ async function chooseScope(flags) {
     message: "Em qual escopo?",
     options: [
       {
-        value: "project",
+        value: "project" as const,
         label: "Este repositório",
         hint: process.cwd(),
       },
       {
-        value: "global",
+        value: "global" as const,
         label: "Home",
         hint: "Disponível em todos os projetos",
       },
@@ -125,29 +161,40 @@ async function chooseScope(flags) {
   return selected;
 }
 
-async function confirmOverwrite(skillName, flags) {
-  if (flags.yes) return true;
+function replacementWarning(names: string[]): string {
+  if (names.length === 1) {
+    return `${names[0]} já existe e será substituída pela nova.`;
+  }
+  return `${names.join(", ")} já existem e serão substituídas pelas novas.`;
+}
+
+async function confirmReplacement(names: string[], flags: Flags): Promise<boolean> {
+  if (names.length === 0) return true;
+
+  const warning = replacementWarning(names);
+  if (flags.yes) {
+    p.log.warn(warning);
+    return true;
+  }
   if (!process.stdin.isTTY) {
-    throw new Error(
-      `${skillName} já existe no destino. Use --yes para substituir.`,
-    );
+    throw new Error(`${warning} Use --yes para substituir.`);
   }
 
   const confirmed = await p.confirm({
-    message: `${skillName} já existe. Substituir?`,
+    message: `${warning} Substituir?`,
   });
   if (p.isCancel(confirmed)) cancel();
   return confirmed;
 }
 
-export async function main(argv) {
+export async function main(argv: string[]): Promise<void> {
   const flags = parseArgs(argv);
   if (flags.help) {
     console.log(helpText().trimEnd());
     return;
   }
 
-  p.intro("Instalar skills");
+  p.intro(flags.command === "update" ? "Atualizar skills" : "Instalar skills");
 
   const targetId = await chooseTarget(flags);
   const scope = await chooseScope(flags);
@@ -164,19 +211,23 @@ export async function main(argv) {
     return;
   }
 
-  const installed = [];
-  const replaced = [];
-  const skipped = [];
+  const existing: string[] = [];
+  for (const skill of skills) {
+    if (await pathExists(path.join(destination, skill.name))) {
+      existing.push(skill.name);
+    }
+  }
+  const replaceExisting = await confirmReplacement(existing, flags);
+
+  const installed: string[] = [];
+  const replaced: string[] = [];
+  const skipped: string[] = [];
 
   for (const skill of skills) {
-    const dest = path.join(destination, skill.name);
-    let overwrite = false;
-    if (await pathExists(dest)) {
-      overwrite = await confirmOverwrite(skill.name, flags);
-      if (!overwrite) {
-        skipped.push(skill.name);
-        continue;
-      }
+    const overwrite = existing.includes(skill.name);
+    if (overwrite && !replaceExisting) {
+      skipped.push(skill.name);
+      continue;
     }
 
     const result = await installSkill({

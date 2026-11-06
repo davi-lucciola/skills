@@ -1,7 +1,7 @@
 {
   "name": "skills",
   "version": "0.1.0",
-  "description": "Instala skills no Cursor (.cursor/skills) ou no padrão universal (.agents/skills).",
+  "description": "Instala skills no Cursor, no Claude Code, no Codex, no OpenCode ou no padrão universal.",
   "type": "module",
   "bin": {
     "skills": "./bin/cli.js"
@@ -10,7 +10,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "node --test",
+    "build": "tsc",
+    "test": "tsc && node --test dist/test",
     "start": "node ./bin/cli.js"
   },
   "repository": {
@@ -19,5 +20,9 @@
   },
   "dependencies": {
     "@clack/prompts": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2"
   }
 }

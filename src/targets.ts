@@ -3,9 +3,18 @@ import path from "node:path";
 /**
  * Destinos de instalação.
  * `visible: false` reserva o harness. Ele não entra no menu até a implementação existir.
- * Os caminhos de opencode, devin, windsurf, amp e pi seguem o CLI skills.sh.
+ * Os caminhos seguem o CLI skills.sh.
  */
-export const targets = {
+export type Target = {
+  id: string;
+  label: string;
+  hint: string;
+  visible: boolean;
+  projectDir: string;
+  globalDir: string;
+};
+
+export const targets: Record<string, Target> = {
   cursor: {
     id: "cursor",
     label: "Cursor",
@@ -22,11 +31,27 @@ export const targets = {
     projectDir: ".agents/skills",
     globalDir: ".agents/skills",
   },
+  "claude-code": {
+    id: "claude-code",
+    label: "Claude Code",
+    hint: ".claude/skills",
+    visible: true,
+    projectDir: ".claude/skills",
+    globalDir: ".claude/skills",
+  },
+  codex: {
+    id: "codex",
+    label: "Codex",
+    hint: "Mesma pasta do padrão universal",
+    visible: true,
+    projectDir: ".agents/skills",
+    globalDir: ".agents/skills",
+  },
   opencode: {
     id: "opencode",
     label: "OpenCode",
-    hint: "Ainda não disponível",
-    visible: false,
+    hint: "No repositório, .agents/skills; na home, ~/.config/opencode/skills",
+    visible: true,
     projectDir: ".agents/skills",
     globalDir: ".config/opencode/skills",
   },
@@ -64,11 +89,14 @@ export const targets = {
   },
 };
 
-export function visibleTargets() {
+export function visibleTargets(): Target[] {
   return Object.values(targets).filter((target) => target.visible);
 }
 
-export function resolveDestination(targetId, { scope, cwd, home }) {
+export function resolveDestination(
+  targetId: string,
+  { scope, cwd, home }: { scope: string; cwd: string; home: string },
+): string {
   const target = targets[targetId];
   if (!target) {
     throw new Error(`Destino desconhecido: ${targetId}`);

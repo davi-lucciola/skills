@@ -1,7 +1,18 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-export function assertInside(parent, child) {
+function errorCode(error: unknown): string | undefined {
+  if (
+    error instanceof Error &&
+    "code" in error &&
+    typeof error.code === "string"
+  ) {
+    return error.code;
+  }
+  return undefined;
+}
+
+export function assertInside(parent: string, child: string): void {
   const relative = path.relative(path.resolve(parent), path.resolve(child));
   const escapes = relative.split(path.sep).includes("..");
   if (relative === "" || escapes || path.isAbsolute(relative)) {
@@ -9,17 +20,27 @@ export function assertInside(parent, child) {
   }
 }
 
-export async function pathExists(target) {
+export async function pathExists(target: string): Promise<boolean> {
   try {
     await fs.stat(target);
     return true;
   } catch (error) {
-    if (error.code === "ENOENT") return false;
+    if (errorCode(error) === "ENOENT") return false;
     throw error;
   }
 }
 
-export async function installSkill({ sourceDir, destRoot, name, overwrite }) {
+export async function installSkill({
+  sourceDir,
+  destRoot,
+  name,
+  overwrite,
+}: {
+  sourceDir: string;
+  destRoot: string;
+  name: string;
+  overwrite: boolean;
+}): Promise<{ status: "skipped" | "replaced" | "installed"; dest: string }> {
   const dest = path.resolve(destRoot, name);
   assertInside(destRoot, dest);
 
