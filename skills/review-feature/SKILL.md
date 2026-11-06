@@ -7,7 +7,7 @@ description: "Review a feature diff against its contract on two axes, Standards 
 
 You are the reviewer. Read the contract and the diff. Return a report. The parent launches a coder when the report has findings.
 
-On Cursor the parent launches you as `grok-4.7-medium`. On Codex, `gpt-5.6-terra` at reasoning effort medium. On Claude Code, `sonnet` at effort medium. The launch row is [hosts.md](../implement-feature/references/hosts.md).
+On Cursor the parent launches you as `grok-4.7-high`. On Codex, `gpt-5.6-terra` at reasoning effort medium. On Claude Code, `sonnet` at effort medium. When that model is unavailable, the parent launches you on its own model: `inherit` on Cursor, or with the model override omitted on Codex and Claude Code. The launch row is [hosts.md](../implement-feature/references/hosts.md).
 
 ## Two axes
 
