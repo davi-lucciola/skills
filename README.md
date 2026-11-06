@@ -11,14 +11,15 @@ Run the command from the root of the repository that should receive the skills.
 Install the skills for your harness using the section below, then ask the agent to use `ask-davi`. That skill is the map of this package: it says which skill or step fits what you want to do.
 
 - `ask-davi` — map of the flow. Use it when you are unsure which skill or step fits.
-- `implement-feature` — ships one feature: explore, an accepted plan, parallel coders, review, a test on a running instance, and a pull request into `develop`, `main`, or `master`, the first of those refs on `origin`.
-- `explore-feature` — reads the repository and returns a note of files, business rules, and open gaps.
-- `code-feature` — implements one contract inside a worktree, or fixes review findings and test bugs.
+- `implement-feature` — ships one feature. The parent reads a single repo, writes an accepted plan, codes a single contract, runs the suite, and opens a pull request into `develop`, `main`, or `master`, the first of those refs on `origin`. Explorers and coders run in parallel only when the work is actually parallel.
+- `explore-feature` — reads the repository and returns a note of files, business rules, seams, and open gaps.
+- `code-feature` — implements one contract inside a worktree, or fixes review findings and test bugs. It also holds the branch and commit convention.
 - `review-feature` — reviews the diff against the contract on Standards and Spec, and leaves the code unchanged.
-- `validate-feature` — validates a feature that is already running: business cases, curl, database rows, and screenshots.
+- `validate-feature` — proves the scenarios the suite missed on a running instance: curl, database rows, and screenshots.
+- `pr` — writes the pull request body: a small visual, before/after evidence, and the merge door.
 - `clean-worktrees` — removes a sibling worktree after its pull request is merged into the integration branch on `origin`.
 
-The pull request step follows Matt Pocock's `pr` skill. Install that skill separately. This package does not include it.
+The pull request step follows the `pr` skill in this package.
 
 ## Cursor
 
