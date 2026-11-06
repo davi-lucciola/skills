@@ -46,3 +46,7 @@ Business cases on a running instance, plus one case the automated tests miss. AP
 ### `pr`
 
 Matt Pocock's skill, installed separately. The parent follows it after step 5. The base is `develop`. The evidence is `.feature-evidence/<slug>/`.
+
+### `clean-worktrees`
+
+The user invokes it after the pull request. It removes `<parent>/<name>--<slug>` only once the PR is merged into the repo's integration branch (`develop` when the repo has it, otherwise the default branch).

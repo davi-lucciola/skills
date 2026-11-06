@@ -16,6 +16,7 @@ Instale as skills do seu harness na seção abaixo e peça ao agente para usar `
 - `code-feature` — implementa um contrato num worktree, ou corrige findings de review e bugs de teste.
 - `review-feature` — revisa o diff contra o contrato em Standards e Spec, e deixa o código como está.
 - `validate-feature` — valida uma feature que já está rodando: casos de negócio, curl, linhas do banco e screenshots.
+- `clean-worktrees` — remove o worktree irmão depois que o pull request entra na branch de integração do repositório.
 
 O passo do pull request segue a skill `pr` do Matt Pocock. Instale essa skill à parte. Este pacote não a inclui.
 

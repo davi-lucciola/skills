@@ -16,6 +16,7 @@ Install the skills for your harness using the section below, then ask the agent 
 - `code-feature` — implements one contract inside a worktree, or fixes review findings and test bugs.
 - `review-feature` — reviews the diff against the contract on Standards and Spec, and leaves the code unchanged.
 - `validate-feature` — validates a feature that is already running: business cases, curl, database rows, and screenshots.
+- `clean-worktrees` — removes a sibling worktree after its pull request is merged into the repo's integration branch.
 
 The pull request step follows Matt Pocock's `pr` skill. Install that skill separately. This package does not include it.
 
