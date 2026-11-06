@@ -10,7 +10,7 @@ You don't remember every skill, so ask.
 
 Before stating what a skill does or recommending a step be skipped, read that skill's `SKILL.md`. The lines below are orientation.
 
-The parent session runs at high or xhigh effort. Implementation runs in a sibling worktree, one per repo. Parallel work is the explorers, and the coders whose contracts do not share paths. After the tests are clean, the root agent opens one PR per repo into `develop` with the installed `pr` skill. This package does not ship `pr`. When it is missing, install Matt Pocock's skills.
+The parent session runs at high or xhigh effort. Implementation runs in a sibling worktree, one per repo. Parallel work is the explorers, and the coders whose contracts do not share paths. The plan gate is the one stop. After the tests are clean, the root agent opens one PR per repo into `develop` in that same turn, with the installed `pr` skill. The reply ends with the URL. This package does not ship `pr`. When it is missing, install Matt Pocock's skills.
 
 ## The flow
 
@@ -19,7 +19,7 @@ The parent session runs at high or xhigh effort. Implementation runs in a siblin
 3. **Code.** One `code-feature` subagent per contract, in parallel, inside `<parent>/<name>--<slug>`.
 4. **Code review.** `review-feature` reports Standards and Spec. Findings launch a coder. That fix is not reviewed again.
 5. **Test.** One `validate-feature` tester for the whole feature, on a running instance. Bugs launch a coder, then the tester runs again. The same bug twice stops the flow.
-6. **PR.** The parent opens one PR per changed repo into `develop`, following `pr`.
+6. **PR.** The parent opens one PR per changed repo into `develop`, following `pr`, in the same turn as a clean validation. The reply ends with the URL.
 
 ## The skills
 
@@ -45,4 +45,4 @@ Business cases on a running instance, plus one case the automated tests miss. AP
 
 ### `pr`
 
-Matt Pocock's skill, installed separately. The parent follows it after step 5. The base is `develop`. The evidence is `.feature-evidence/<slug>/`.
+Matt Pocock's skill, installed separately. The parent follows it in the same turn as a clean validation. The base is `develop`. The evidence is `.feature-evidence/<slug>/`. The reply ends with the PR URL.

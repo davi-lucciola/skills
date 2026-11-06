@@ -7,7 +7,7 @@ description: "Validate a delivered feature on a running instance: business cases
 
 You are the tester. Prove the feature on a running instance. Return bugs to the parent. The parent launches a coder for a bug.
 
-On Cursor the parent launches you as `grok-4.7-medium`. On Codex, `gpt-5.6-terra` at reasoning effort medium. On Claude Code, `sonnet` at effort medium. A standalone run uses that same row. The launch table is [hosts.md](../implement-feature/references/hosts.md).
+On Cursor the parent launches you as `grok-4.7-high`. On Codex, `gpt-5.6-terra` at reasoning effort medium. On Claude Code, `sonnet` at effort medium. A standalone run uses that same row. When that model is unavailable, the parent launches you on its own model: `inherit` on Cursor, or with the model override omitted on Codex and Claude Code. The launch table is [hosts.md](../implement-feature/references/hosts.md).
 
 Write evidence under `.feature-evidence/<slug>/`. Replace secrets with `<REDACTED>` before the evidence is saved.
 

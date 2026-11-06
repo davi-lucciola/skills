@@ -4,7 +4,7 @@ Read this before launching a subagent. `implement-feature` points here so the mo
 
 ## Parent
 
-Run `implement-feature` on a high or xhigh effort. This file does not pin the parent's model id. Pass the subagent rows below as written.
+Run `implement-feature` on a high or xhigh effort. This file does not pin the parent's model id. Pass the subagent rows below as written. When the named model is unavailable, follow [When the named model is unavailable](#when-the-named-model-is-unavailable).
 
 ## Which tool you have
 
@@ -22,7 +22,7 @@ The tool you will call is the host.
 
 ## Coder
 
-- Cursor: Task `model` `grok-4.7-medium`.
+- Cursor: Task `model` `grok-4.7-high`.
 - Codex: `model` `gpt-5.6-terra`, `reasoning_effort` `medium`.
 - Claude Code: Agent `model` `sonnet`, `effort` `high`.
 
@@ -30,23 +30,13 @@ The tool you will call is the host.
 
 Same Cursor and Codex rows as the coder. On Claude Code both use Agent `model` `sonnet` and `effort` `medium`. The coder stays at high on Claude Code.
 
-## When the slug is missing
+## When the named model is unavailable
 
-Stop and show the live allowlist. Keep the row above. A fast slug does not stand in for the standard one. A higher effort does not stand in for medium.
+Launch with the row above.
 
-On Cursor, when the inline Task `model` parameter rejects the slug, write a subagent file in the workspace that owns the Task tool and dispatch that type:
+When that model is absent from the live allowlist, the host rejects the slug, or the launch fails for any other reason, launch the subagent on the parent model. On Cursor, Task `model` is `inherit`. On Claude Code and Codex, omit the model override so the child uses the current agent's model.
 
-```markdown
----
-name: feature-explorer
-description: Read-only feature exploration on Composer 2.5 with fast off.
-model: composer-2.5[fast=false]
----
-```
-
-Coder, reviewer, and tester use `model: grok-4.7[reasoning_effort=medium]` in the same kind of file, one file per role. The task prompt still comes from `implement-feature`.
-
-On Codex, when `spawn_agent` rejects `gpt-5.6-luna`, stop and show the error. Sol and Terra do not stand in for Luna.
+`inherit` selects the parent model. The row stays the preferred model. A fast slug, another effort, Sol, and Terra are different models and stay off this launch.
 
 ## How to launch
 
@@ -55,7 +45,7 @@ Cursor:
 ```text
 Task
   subagent_type: generalPurpose
-  model: <slug from the row>
+  model: <slug from the row, or inherit>
 ```
 
 Claude Code:
@@ -66,6 +56,8 @@ Agent
   effort: <effort from the row>
 ```
 
+When the named model is unavailable, omit `model` and `effort`.
+
 Codex:
 
 ```text
@@ -75,4 +67,6 @@ spawn_agent
   fork_turns: none
 ```
 
-`fork_turns: none` starts a fresh thread. The prompt carries the contract, the notes, and the findings. A child does not inherit this conversation.
+When the named model is unavailable, omit `model` and `reasoning_effort`. Keep `fork_turns: none`.
+
+`fork_turns: none` starts a fresh thread. The prompt carries the contract, the notes, and the findings. A child does not inherit this conversation. `inherit` is the model only.
