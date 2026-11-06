@@ -1,0 +1,7 @@
+# O pacote publicado leva bin/, dist/src/ e skills/.
+# package.json e README.md entram sempre.
+# A barra no início prende o padrão à raiz: src/ sozinho também casa com dist/src/.
+/src/
+/test/
+/tsconfig.json
+/dist/test/
