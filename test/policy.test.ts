@@ -58,3 +58,23 @@ test("a base é develop, main, depois master", () => {
   assert.match(text, /develop,\s*then main,\s*then master/);
   assert.match(text, /develop`, `main`, and `master`/);
 });
+
+test("sujeira só em .feature-evidence não segura o worktree", () => {
+  const text = read("skills/clean-worktrees/SKILL.md");
+  assert.match(
+    text,
+    /every dirty path is inside `\.feature-evidence\/` or the status is empty/,
+  );
+  assert.match(
+    text,
+    /`git -C <original> worktree remove --force <path>` when every dirty path is inside `\.feature-evidence\/`/,
+  );
+  assert.match(
+    text,
+    /`git -C <original> worktree remove <path>` when the status is empty/,
+  );
+  assert.match(
+    text,
+    /Any dirty path is outside `\.feature-evidence\/`\. Report that uncommitted path/,
+  );
+});
