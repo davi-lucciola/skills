@@ -38,7 +38,7 @@ Done when every qualifying base is a branch on `origin`, and each missing local 
 
 ## 3. Classify each candidate
 
-`git -C <original> worktree list --porcelain` shows whether a candidate is a worktree of `<original>`. A `branch refs/heads/<branch>` line names the branch. A `detached` line means the checkout is detached. `git -C <worktree> rev-parse HEAD` is the tip. `git -C <worktree> status --porcelain` is the cleanliness check.
+`git -C <original> worktree list --porcelain` shows whether a candidate is a worktree of `<original>`. A `branch refs/heads/<branch>` line names the branch. A `detached` line means the checkout is detached. `git -C <worktree> rev-parse HEAD` is the tip. `git -C <worktree> status --porcelain --untracked-files=normal` lists dirty paths relative to the worktree root. Strip porcelain quotes before comparing a path. A path is inside `.feature-evidence/` when it is `.feature-evidence` or begins with `.feature-evidence/`. A rename or copy counts both paths.
 
 Run this command with its working directory set to `<original>`: `gh pr list --head <branch> --state all --json number,state,baseRefName,headRefOid,url`.
 
@@ -49,20 +49,20 @@ Keep the directory and report it when any of these is true:
 - That `gh pr list` returns no pull request.
 - Any pull request for that head is `OPEN`.
 - No pull request is `MERGED` into a qualifying base. A closed pull request that was not merged, and a merge into some other base, keep the directory.
-- `git -C <worktree> status --porcelain` is non-empty.
+- Any dirty path is outside `.feature-evidence/`. Report that uncommitted path.
 - The branch tip is not the `headRefOid` of the merged qualifying pull request. A commit landed after that pull request.
 - The process cwd is inside that worktree. Report that this session is inside it. Leave the directory in place.
 
-A candidate is removable when there is a `MERGED` pull request whose base is qualifying, no open pull request for that head, the worktree is clean, the tip equals that pull request's `headRefOid`, and the session cwd is outside the directory.
+A candidate is removable when there is a `MERGED` pull request whose base is qualifying, no open pull request for that head, every dirty path is inside `.feature-evidence/` or the status is empty, the tip equals that pull request's `headRefOid`, and the session cwd is outside the directory.
 
 Done when every candidate is removable or kept, and each kept directory has a reason from the list above.
 
 ## 4. Remove
 
-Remove each removable candidate from `<original>`, in this order. Step 1 is `git worktree remove` with the path and without `--force`.
+Remove each removable candidate from `<original>`, in this order. When the status is empty, step 1 is `git worktree remove` without `--force`. When every dirty path is inside `.feature-evidence/`, step 1 passes a single `--force`. A second `--force` is not used. A locked worktree fails that command and is reported.
 
-1. `git -C <original> worktree remove <path>`
-2. `git -C <original> branch -d <branch>`. When `-d` refuses because the merge was a squash, `git -C <original> branch -D <branch>` is allowed only if the tip still equals the merged pull request `headRefOid` and the worktree was clean before removal.
+1. `git -C <original> worktree remove <path>` when the status is empty. `git -C <original> worktree remove --force <path>` when every dirty path is inside `.feature-evidence/`.
+2. `git -C <original> branch -d <branch>`. When `-d` refuses because the merge was a squash, `git -C <original> branch -D <branch>` is allowed only if the tip still equals the merged pull request `headRefOid` and the candidate was removable. Uncommitted files under `.feature-evidence/` do not block that `-D`.
 3. `git -C <original> push origin --delete <branch>` only after step 2 succeeds. A remote ref that is already gone counts as done. When step 2 fails, the remote branch stays.
 
 `.feature-evidence/` inside the worktree is removed with the directory. Do not copy it out.
@@ -73,6 +73,6 @@ Done when every removable candidate has finished this sequence, or its failure i
 
 ## 5. Report
 
-End with a report. Each candidate has its path, branch, pull request url, base, and whether it was removed or kept and why. For a removal, say that the worktree, the local branch, and the remote branch are gone, or that the remote was already absent.
+End with a report. Each candidate has its path, branch, pull request url, base, and whether it was removed or kept and why. When the directory is kept because a dirty path is outside `.feature-evidence/`, name that uncommitted path. For a removal, say that the worktree, the local branch, and the remote branch are gone, or that the remote was already absent. When the only dirty paths were inside `.feature-evidence/`, say those uncommitted files were discarded with the directory.
 
 Done when every candidate appears in that report.
