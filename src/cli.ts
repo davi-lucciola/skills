@@ -104,9 +104,11 @@ Opções:
   --target, -t <destino>       ${destinationNames()}.
                                cursor grava em .cursor/skills.
                                claude-code grava em .claude/skills.
-                               agents, codex e opencode no repositório gravam
-                               em .agents/skills. Na home, opencode usa
-                               ~/.config/opencode/skills.
+                               agents, codex, opencode, antigravity e gemini
+                               no repositório gravam em .agents/skills.
+                               Na home, opencode usa ~/.config/opencode/skills,
+                               antigravity usa ~/.gemini/config/skills e
+                               gemini usa ~/.gemini/skills.
   --global, -g                 Instala na home em vez do repositório atual.
   --yes, -y                    Substitui skills existentes sem perguntar.
   --help, -h                   Mostra esta ajuda.

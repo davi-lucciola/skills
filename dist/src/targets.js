@@ -40,6 +40,22 @@ export const targets = {
         projectDir: ".agents/skills",
         globalDir: ".config/opencode/skills",
     },
+    antigravity: {
+        id: "antigravity",
+        label: "Antigravity",
+        hint: "No repositório, .agents/skills; na home, ~/.gemini/config/skills",
+        visible: true,
+        projectDir: ".agents/skills",
+        globalDir: ".gemini/config/skills",
+    },
+    gemini: {
+        id: "gemini",
+        label: "Gemini CLI",
+        hint: "No repositório, .agents/skills; na home, ~/.gemini/skills",
+        visible: true,
+        projectDir: ".agents/skills",
+        globalDir: ".gemini/skills",
+    },
     devin: {
         id: "devin",
         label: "Devin",

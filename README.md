@@ -101,6 +101,38 @@ Home directory, available in every project:
 npx --yes github:davi-lucciola/skills --target opencode --global --yes
 ```
 
+## Antigravity
+
+Copies to `.agents/skills` in this repository, or to `~/.gemini/config/skills` in your home directory. The Antigravity app and the Antigravity CLI both read that home directory. In this repository, this target writes the same files as the universal layout.
+
+This repository:
+
+```bash
+npx --yes github:davi-lucciola/skills --target antigravity --yes
+```
+
+Home directory, available in every project:
+
+```bash
+npx --yes github:davi-lucciola/skills --target antigravity --global --yes
+```
+
+## Gemini CLI
+
+Copies to `.agents/skills` in this repository, or to `~/.gemini/skills` in your home directory. The Gemini CLI reads that home directory. The Antigravity app does not. In this repository, this target writes the same files as the universal layout.
+
+This repository:
+
+```bash
+npx --yes github:davi-lucciola/skills --target gemini --yes
+```
+
+Home directory, available in every project:
+
+```bash
+npx --yes github:davi-lucciola/skills --target gemini --global --yes
+```
+
 Devin, Windsurf, Amp, and Pi are not in the installer menu yet.
 
 ## Update
@@ -175,6 +207,34 @@ Home directory:
 
 ```bash
 npx --yes github:davi-lucciola/skills update --target opencode --global --yes
+```
+
+### Antigravity
+
+This repository:
+
+```bash
+npx --yes github:davi-lucciola/skills update --target antigravity --yes
+```
+
+Home directory:
+
+```bash
+npx --yes github:davi-lucciola/skills update --target antigravity --global --yes
+```
+
+### Gemini CLI
+
+This repository:
+
+```bash
+npx --yes github:davi-lucciola/skills update --target gemini --yes
+```
+
+Home directory:
+
+```bash
+npx --yes github:davi-lucciola/skills update --target gemini --global --yes
 ```
 
 ## Notes

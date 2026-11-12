@@ -22,6 +22,8 @@ The tool you will call is the host.
 - **Cursor** has the Task tool.
 - **Claude Code** has the Agent tool.
 - **Codex** has `spawn_agent`.
+- **Antigravity** has `invoke_subagent`.
+- **Gemini CLI** has `generalist`.
 
 ## Launch
 
@@ -30,17 +32,23 @@ Pass the parent's model.
 - Cursor: Task `model` `inherit`.
 - Claude Code: omit `model` and `effort`.
 - Codex: omit `model` and `reasoning_effort`. Keep `fork_turns: none`.
+- Antigravity: `invoke_subagent` with `TypeName` `self`, `Model` `inherit`, and `Workspace` `inherit`. Omit a separate effort. The prompt names the worktree path.
+- Gemini CLI: call `generalist`. Omit `model`, `temperature`, and `max_turns`. The prompt names the worktree path and carries the contract or the findings. The child does not launch another subagent.
 
 `fork_turns: none` starts a fresh thread. The prompt carries a path under `.feature-evidence/<slug>/` and the contract. A review prompt carries the contract and `git diff <base>...HEAD`. A resumed coder carries the findings. A child does not inherit this conversation. `inherit` is the model only.
 
 ## When that launch is refused
 
-Read the live allowlist the host exposed in this session. Launch once more with one slug copied from that list.
+On Cursor, Claude Code, and Codex, read the live allowlist the host exposed in this session. Launch once more with one slug copied from that list.
 
 - Explorer: the entry the list marks as faster or smaller, when the list shows that mark.
 - Coder, reviewer, and tester: an entry of the parent's family, when the list shows that family, at the parent's capability.
 
 The slug comes from the list. A second refusal ends the launch. Show the host error and the list.
+
+On Antigravity, `Model` is a tier: `inherit`, `flash`, or `pro`. There is no effort field and no slug allowlist. When the call is refused, launch once more with one tier copied from the error. A second refusal ends the launch.
+
+On the Gemini CLI, the first call omits `model`. When that call is refused and the session lists model ids, launch once more with one id copied from that list. A second refusal ends the launch. Show the host error and the list.
 
 ## How to launch
 
@@ -70,3 +78,22 @@ spawn_agent
 ```
 
 Omit `model` and `reasoning_effort` on the first launch. When that launch is refused, set `model` to the slug copied from the live allowlist. Keep `fork_turns: none`.
+
+Antigravity:
+
+```text
+invoke_subagent
+  TypeName: self
+  Model: inherit
+  Workspace: inherit
+```
+
+The prompt names the worktree path. `Workspace` stays `inherit`. Do not pass `branch`: that opens a second worktree beside the one this flow creates. A fix calls `send_message` on that subagent's conversation id. When the first launch is refused, `Model` is one tier copied from the error: `inherit`, `flash`, or `pro`.
+
+Gemini CLI:
+
+```text
+generalist
+```
+
+Omit `model`, `temperature`, and `max_turns` on the first launch. The prompt names the worktree path and carries the contract or the findings. A fix is a new `generalist` call, and that prompt carries the findings. The child does not launch another subagent. When the first launch is refused, set `model` to one id copied from the list the session shows.

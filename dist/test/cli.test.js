@@ -45,16 +45,19 @@ test("parseArgs lê destino, escopo e confirmação", () => {
     assert.equal(parseArgs(["--target", "claude-code"]).target, "claude-code");
     assert.equal(parseArgs(["--target", "codex"]).target, "codex");
     assert.equal(parseArgs(["--target=opencode"]).target, "opencode");
+    assert.equal(parseArgs(["--target", "antigravity"]).target, "antigravity");
+    assert.equal(parseArgs(["--target=gemini"]).target, "gemini");
     assert.throws(() => parseArgs(["--target", "devin"]), /ainda não disponível/);
     assert.throws(() => parseArgs(["--nope"]), /desconhecido/);
 });
-test("sem skills, termina com aviso e não cria o destino", async () => {
+test("em um repositório vazio, copia as skills do pacote", async () => {
     const cwd = await fs.mkdtemp(path.join(os.tmpdir(), "skills-cli-"));
     const result = runCli(["--target", "cursor", "--yes"], cwd);
     const output = `${result.stdout}${result.stderr}`;
     assert.equal(result.status, 0, output);
-    assert.match(output, /Nenhuma skill encontrada/);
-    await assert.rejects(fs.stat(path.join(cwd, ".cursor")));
+    assert.match(output, /Instaladas:/);
+    assert.match(output, /ask-davi/);
+    await fs.stat(path.join(cwd, ".cursor", "skills", "ask-davi", "SKILL.md"));
 });
 test("--help sai zero", () => {
     const result = runCli(["--help"], packageRoot);
@@ -63,7 +66,21 @@ test("--help sai zero", () => {
     assert.match(result.stdout, /claude-code/);
     assert.match(result.stdout, /codex/);
     assert.match(result.stdout, /opencode/);
+    assert.match(result.stdout, /antigravity/);
+    assert.match(result.stdout, /gemini/);
+    assert.match(result.stdout, /~\/\.gemini\/config\/skills/);
+    assert.match(result.stdout, /~\/\.gemini\/skills/);
     assert.match(result.stdout, /update/);
+});
+test("hosts.md nomeia o lançamento no Antigravity e no Gemini CLI", async () => {
+    const hosts = await fs.readFile(path.join(packageRoot, "skills/implement-feature/references/hosts.md"), "utf8");
+    assert.match(hosts, /invoke_subagent/);
+    assert.match(hosts, /TypeName: self/);
+    assert.match(hosts, /Workspace: inherit/);
+    assert.match(hosts, /send_message/);
+    assert.match(hosts, /generalist/);
+    assert.match(hosts, /temperature/);
+    assert.match(hosts, /max_turns/);
 });
 test("update pergunta antes de substituir e avisa que a skill será trocada", async () => {
     const skillDir = path.join(packageRoot, "skills", "fixture-update");
@@ -77,20 +94,23 @@ test("update pergunta antes de substituir e avisa que a skill será trocada", as
         const installedOutput = `${installed.stdout}${installed.stderr}`;
         assert.equal(installed.status, 0, installedOutput);
         assert.match(installedOutput, /Atualizar skills/);
-        assert.match(installedOutput, /Instaladas: fixture-update/);
+        assert.match(installedOutput, /Instaladas:/);
+        assert.match(installedOutput, /fixture-update/);
         assert.equal(await fs.readFile(installedFile, "utf8"), "primeira");
         await fs.writeFile(path.join(skillDir, "SKILL.md"), "segunda");
         const blocked = runCli(["update", "--target", "cursor"], cwd);
         const blockedOutput = `${blocked.stdout}${blocked.stderr}`;
         assert.notEqual(blocked.status, 0, blockedOutput);
-        assert.match(blockedOutput, /fixture-update já existe e será substituída pela nova/);
+        assert.match(blockedOutput, /fixture-update/);
+        assert.match(blockedOutput, /serão substituídas pelas novas/);
         assert.match(blockedOutput, /Use --yes para substituir/);
         assert.equal(await fs.readFile(installedFile, "utf8"), "primeira");
         const updated = runCli(["update", "--target", "cursor", "--yes"], cwd);
         const updatedOutput = `${updated.stdout}${updated.stderr}`;
         assert.equal(updated.status, 0, updatedOutput);
-        assert.match(updatedOutput, /já existe e será substituída pela nova/);
-        assert.match(updatedOutput, /Substituídas: fixture-update/);
+        assert.match(updatedOutput, /já existem e serão substituídas pelas novas/);
+        assert.match(updatedOutput, /Substituídas:/);
+        assert.match(updatedOutput, /fixture-update/);
         assert.equal(await fs.readFile(installedFile, "utf8"), "segunda");
     }
     finally {

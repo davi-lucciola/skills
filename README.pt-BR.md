@@ -101,6 +101,38 @@ Na home, disponível em todos os projetos:
 npx --yes github:davi-lucciola/skills --target opencode --global --yes
 ```
 
+## Antigravity
+
+Copia para `.agents/skills` neste repositório, ou para `~/.gemini/config/skills` na home. O App e o CLI do Antigravity leem essa pasta da home. Neste repositório, este destino grava os mesmos arquivos do padrão universal.
+
+Neste repositório:
+
+```bash
+npx --yes github:davi-lucciola/skills --target antigravity --yes
+```
+
+Na home, disponível em todos os projetos:
+
+```bash
+npx --yes github:davi-lucciola/skills --target antigravity --global --yes
+```
+
+## Gemini CLI
+
+Copia para `.agents/skills` neste repositório, ou para `~/.gemini/skills` na home. O Gemini CLI lê essa pasta da home. O App do Antigravity não lê. Neste repositório, este destino grava os mesmos arquivos do padrão universal.
+
+Neste repositório:
+
+```bash
+npx --yes github:davi-lucciola/skills --target gemini --yes
+```
+
+Na home, disponível em todos os projetos:
+
+```bash
+npx --yes github:davi-lucciola/skills --target gemini --global --yes
+```
+
 Devin, Windsurf, Amp e Pi ainda não entram no menu do instalador.
 
 ## Atualizar
@@ -175,6 +207,34 @@ Na home:
 
 ```bash
 npx --yes github:davi-lucciola/skills update --target opencode --global --yes
+```
+
+### Antigravity
+
+Neste repositório:
+
+```bash
+npx --yes github:davi-lucciola/skills update --target antigravity --yes
+```
+
+Na home:
+
+```bash
+npx --yes github:davi-lucciola/skills update --target antigravity --global --yes
+```
+
+### Gemini CLI
+
+Neste repositório:
+
+```bash
+npx --yes github:davi-lucciola/skills update --target gemini --yes
+```
+
+Na home:
+
+```bash
+npx --yes github:davi-lucciola/skills update --target gemini --global --yes
 ```
 
 ## Notas
