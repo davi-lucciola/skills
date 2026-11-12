@@ -6,10 +6,10 @@ import { resolveDestination, targets, visibleTargets } from "../src/targets.js";
 const cwd = path.resolve("/work/repo");
 const home = path.resolve("/home/davi");
 
-test("o menu mostra cursor, agents, claude-code, codex e opencode", () => {
+test("o menu mostra cursor, agents, claude-code, codex, opencode, antigravity e gemini", () => {
   assert.deepEqual(
     visibleTargets().map((target) => target.id),
-    ["cursor", "agents", "claude-code", "codex", "opencode"],
+    ["cursor", "agents", "claude-code", "codex", "opencode", "antigravity", "gemini"],
   );
   for (const id of ["devin", "windsurf", "amp", "pi"]) {
     assert.equal(targets[id]?.visible, false);
@@ -58,6 +58,22 @@ test("resolve o destino do Cursor e do padrão universal", () => {
   assert.equal(
     resolveDestination("opencode", { scope: "global", cwd, home }),
     path.join(home, ".config/opencode/skills"),
+  );
+  assert.equal(
+    resolveDestination("antigravity", { scope: "project", cwd, home }),
+    path.join(cwd, ".agents/skills"),
+  );
+  assert.equal(
+    resolveDestination("antigravity", { scope: "global", cwd, home }),
+    path.join(home, ".gemini/config/skills"),
+  );
+  assert.equal(
+    resolveDestination("gemini", { scope: "project", cwd, home }),
+    path.join(cwd, ".agents/skills"),
+  );
+  assert.equal(
+    resolveDestination("gemini", { scope: "global", cwd, home }),
+    path.join(home, ".gemini/skills"),
   );
 });
 

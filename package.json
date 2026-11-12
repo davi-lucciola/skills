@@ -1,7 +1,7 @@
 {
   "name": "skills",
   "version": "0.1.0",
-  "description": "Instala skills no Cursor, no Claude Code, no Codex, no OpenCode ou no padrão universal.",
+  "description": "Instala skills no Cursor, no Claude Code, no Codex, no OpenCode, no Antigravity, no Gemini CLI ou no padrão universal.",
   "type": "module",
   "bin": {
     "skills": "./bin/cli.js"
