@@ -1,0 +1,16 @@
+{
+  "name": "davi-lucciola",
+  "owner": {
+    "name": "Davi Lucciola"
+  },
+  "metadata": {
+    "description": "Skills for the Jira → GitHub development flow in Claude Code."
+  },
+  "plugins": [
+    {
+      "name": "davi",
+      "source": "./plugins/davi",
+      "description": "Work item flow from a Jira card to a merged PR (wayfind, create, refine, design, spec, implement, review, qa, pr, ship), MCP onboarding, guard hooks, and the project documentation harness."
+    }
+  ]
+}

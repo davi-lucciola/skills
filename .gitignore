@@ -1,1 +1,5 @@
+__pycache__/
+*.pyc
+.DS_Store
+.workitem-evidence/
 node_modules/

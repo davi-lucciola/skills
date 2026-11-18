@@ -1,0 +1,18 @@
+{
+  "name": "davi",
+  "version": "0.1.0",
+  "description": "Work item flow from a Jira card to a merged PR, with a wayfinder orchestrator, MCP onboarding, guard hooks, and the project documentation harness.",
+  "author": {
+    "name": "Davi Lucciola"
+  },
+  "repository": "https://github.com/davi-lucciola/skills",
+  "keywords": [
+    "jira",
+    "github",
+    "workflow",
+    "openspec",
+    "adr",
+    "c4",
+    "design-system"
+  ]
+}
